@@ -1,5 +1,5 @@
 # manager mistakes
-James EveringhamJames Everingham: VP of Engineering, Meta
+James Everingham: VP of Engineering, Meta
 
 As a manager, I've made my fair share of mistakes. When I fixed these behaviors, the folks who worked for me could achieve much more. Below are some of the top mistakes from early management career:
 - **Unaware of my influence**: I loved brainstorming ideas with my team, but I later realized that my position of power led them to focus solely on my suggestions. Focusing on the outcomes and removing myself from the discussion made the team much more creative.
