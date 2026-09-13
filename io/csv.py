@@ -1,7 +1,19 @@
+# ---
+# jupyter:
+#   jupytext:
+#     formats: ipynb,py:light
+#     text_representation:
+#       extension: .py
+#       format_name: light
+#       format_version: '1.5'
+#       jupytext_version: 1.19.5
+#   kernelspec:
+#     display_name: Python 3 (ipykernel)
+#     language: python
+#     name: python3
+# ---
 
-
-
-# %%
+# +
 import duckdb
 import numpy as np
 import pandas as pd
@@ -91,11 +103,11 @@ convert_options_t = pv.ConvertOptions(
 )
 
 
-col_type = 'dts' # str, flt, dts
+col_type = 'str' # str, flt, dts
 file_dir = '/home/sma/dat'
 file = f'{file_dir}/df_{col_type}.csv'
+# -
 
-# %%
 # str
 if col_type == 'str':
     pd_dtype = pd_dtype_s
@@ -115,7 +127,6 @@ if col_type == 'str':
     # print(df_str[:3])
     # df_str.to_csv(file, index=False)
 
-# %%
 # float
 if col_type == 'flt':
     pd_dtype = pd_dtype_f
@@ -135,7 +146,6 @@ if col_type == 'flt':
     # print(df_flt[:3])
     # df_flt.to_csv(file, index=False)
 
-# %%
 # datetime
 if col_type == 'dts':
     pd_dtype = pd_dtype_t
@@ -157,7 +167,7 @@ if col_type == 'dts':
     # print(df_dts[:3])
     # df_dts.to_csv(file, index=False)
 
-# %%
+# +
 # data = {'c1': [3, 2, 1, 0], 'c2': ['a', 'b', 'c', 'd']}
 # df = pd.DataFrame(
 #     data,
@@ -168,11 +178,10 @@ if col_type == 'dts':
 # print(df.dtypes)
 # print(d2.dtypes)
 # print(d3.dtypes)
+# -
 
-# %% [markdown]
 # ## pandas
 
-# %%
 _ = """
 physical_cores: 4  pandas: 2.2.2         pyarrow: 16.0.0          pyarrow: 16.0.0
 logical_cores : 4                        logical_cores : 8        polars : 0.20.25
@@ -189,14 +198,12 @@ pyarrow + pyarrow        + dtype_pa + to numpy_nullable  2.74s  2.68s  1.64s    
 pyarrow + pyarrow                                        0.48s  0.47s  0.37s      1.39s  1.53s  1.21s
 """
 
-# %%
-%%timeit -r 3 -n 7
+# %%timeit -r 3 -n 7
 d = pd.read_csv(
     file, dtype=pd_dtype_s, engine='c', dtype_backend='numpy_nullable'
 ).astype(pd_dtype)
 
-# %%
-%%timeit -r 3 -n 7
+# %%timeit -r 3 -n 7
 if col_type == 'dts':
     d = pd.read_csv(
         file, engine='c', dtype_backend='numpy_nullable', parse_dates=['c1', 'c2', 'c3'], date_format='%Y-%m-%d %H:%M:%S'
@@ -204,20 +211,17 @@ if col_type == 'dts':
 else:
     d = pd.read_csv(file, engine='c', dtype_backend='numpy_nullable', dtype=pd_dtype)
 
-# %%
-%%time
+# %%time
 #it -r 3 -n 7
 if col_type == 'dts':
     d = pd.read_csv(file, engine='c', dtype_backend='pyarrow',  parse_dates=['c1', 'c2', 'c3'], date_format='%Y-%m-%d %H:%M:%S')
 else:
     d = pd.read_csv(file, engine='c', dtype_backend='pyarrow', dtype=pd_dtype)
 
-# %%
-%%timeit -r 3 -n 7
+# %%timeit -r 3 -n 7
 d = pd.read_csv(file, engine='c', dtype_backend='pyarrow', dtype=pd_dtype_pa)
 
-# %%
-%%timeit -r 3 -n 7
+# %%timeit -r 3 -n 7
 if col_type == 'dts':
     d = pd.read_csv(
         file, engine='pyarrow', dtype_backend='numpy_nullable', parse_dates=['c1', 'c2', 'c3'], date_format='%Y-%m-%d %H:%M:%S'
@@ -225,19 +229,15 @@ if col_type == 'dts':
 else:
     d = pd.read_csv(file, engine='pyarrow', dtype_backend='numpy_nullable', dtype=pd_dtype)
 
-# %%
-%%timeit -r 3 -n 7
+# %%timeit -r 3 -n 7
 d = pd.read_csv(file, engine='pyarrow', dtype_backend='pyarrow', dtype=pd_dtype)
 
-# %%
-%%timeit -r 3 -n 7
+# %%timeit -r 3 -n 7
 d = pd.read_csv(file, engine='pyarrow', dtype_backend='pyarrow', dtype=pd_dtype_pa_s2)
 
-# %%
-%%timeit -r 3 -n 7
+# %%timeit -r 3 -n 7
 d = pd.read_csv(file, engine='pyarrow', dtype_backend='pyarrow', dtype=pd_dtype_pa)
 
-# %%
 if col_type == 'dts':
     pd_dtype_pa = {
         'c1': 'datetime64[us]',
@@ -245,18 +245,17 @@ if col_type == 'dts':
         'c3': 'datetime64[us]',
     }#KeyError: TimestampType(timestamp[ns]) timestamp[ns] cannot be converted to datetime64[ns]
 
-# %%
-%%timeit -r 3 -n 7
+# %%timeit -r 3 -n 7
 d = pd.read_csv(file, engine='pyarrow', dtype_backend='pyarrow', dtype=pd_dtype_pa).convert_dtypes(dtype_backend='numpy_nullable')
 
-# %%
-# %%timeit -r 3 -n 7
+# +
+# # %%timeit -r 3 -n 7
 # d = pd.read_csv(
 #     file, engine='pyarrow', dtype_backend='pyarrow', dtype=pd_dtype_s_pa
 # ).astype(pd_dtype_pa)
 
-# %%
-# %%timeit -r 3 -n 7
+# +
+# # %%timeit -r 3 -n 7
 # if col_type == 'str':
 #     pass
 # elif col_type == 'dts':
@@ -275,15 +274,13 @@ d = pd.read_csv(file, engine='pyarrow', dtype_backend='pyarrow', dtype=pd_dtype_
 #         c2=lambda x: pd.to_numeric(x['c2'], errors='coerce'),
 #         c3=lambda x: pd.to_numeric(x['c3'], errors='coerce'),
 #     )
+# -
 
-# %%
-%%timeit -r 3 -n 7
+# %%timeit -r 3 -n 7
 d = pd.read_csv(file, engine='pyarrow', dtype_backend='pyarrow')
 
-# %% [markdown]
 # # polars
 
-# %%
 _ = """
 physical_cores: 4  pandas: 2.2.2         pyarrow: 16.0.0          pyarrow: 16.0.0
 logical_cores : 4                        logical_cores : 8        polars : 0.20.25
@@ -298,45 +295,36 @@ sql api eager + to pandas numpy_nullable  1.59s  0.47s  0.48s      5.94s  1.29s 
 sql api eager + to pandas pyarrow         0.99s  0.43s  0.45s      3.36s  1.10s  1.71s
 """
 
-# %%
-%%timeit -r 3 -n 7
+# %%timeit -r 3 -n 7
 # default
 d = pl.read_csv(file)
 
-# %%
-%%timeit -r 3 -n 7
+# %%timeit -r 3 -n 7
 # eager
 d = pl.read_csv(file, dtypes=pl_dtype)
 
-# %%
-%%timeit -r 3 -n 7
+# %%timeit -r 3 -n 7
 # lazy
 d = pl.scan_csv(file, dtypes=pl_dtype).collect()
 
-# %%
-%%timeit -r 3 -n 7
+# %%timeit -r 3 -n 7
 # streaming
 d = pl.scan_csv(file, dtypes=pl_dtype).collect(streaming=True)
 
-# %%
-%%timeit -r 3 -n 7
+# %%timeit -r 3 -n 7
 # read csv with sql api
 d = pl.SQLContext(data=pl.scan_csv(file, dtypes=pl_dtype)).execute('select * from data', eager=True)
 
-# %%
-%%timeit -r 3 -n 7
+# %%timeit -r 3 -n 7
 # read csv with sql api and to pandas df
 d = pl.SQLContext(data=pl.scan_csv(file, dtypes=pl_dtype)).execute('select * from data', eager=True).to_pandas(use_pyarrow_extension_array=False)
 
-# %%
-%%timeit -r 3 -n 7
+# %%timeit -r 3 -n 7
 # read csv with sql api and to pandas df
 d = pl.SQLContext(data=pl.scan_csv(file, dtypes=pl_dtype)).execute('select * from data', eager=True).to_pandas(use_pyarrow_extension_array=True)
 
-# %% [markdown]
 # # duckdb
 
-# %%
 _ = """
 physical_cores: 4  pandas: 2.2.2         pyarrow: 16.0.0          pyarrow: 16.0.0          pyarrow: 11.0.0
 logical_cores : 4                        logical_cores : 8        polars : 0.20.25         polars : 0.20.13
@@ -345,20 +333,16 @@ default                                  6.31s  3.27s  4.86s      25.1s  17.3s  
 default to pandas                        2.91s  1.32s  1.50s      18.8s  5.07s  5.73s      16.2s  3.56s  6.06s
 """
 
-# %%
-%%time
+# %%time
 # duckdb
 d = duckdb.sql(f'select * from read_csv_auto("{file}")').fetchall()
 
-# %%
-%%time
+# %%time
 # convert to pandas df
 d = duckdb.sql(f'select * from read_csv_auto("{file}")').df()
 
-# %% [markdown]
 # # pyarrow
 
-# %%
 _ = """
 physical_cores: 4  pandas: 2.2.2       pyarrow: 16.0.0          pyarrow: 16.0.0          pyarrow: 11.0.0
 logical_cores : 4                      logical_cores : 8        polars : 0.20.25         polars : 0.20.13
@@ -371,32 +355,26 @@ dtype   + to pandas numpy_nullable  0.99s  0.45s  0.41s      3.41s  1.61s  1.11s
 dtype   + to pandas pyarrow         0.39s  0.42s  0.37s      1.02s  1.51s  1.06s      0.94s  1.02s  1.11s
 """
 
-# %%
-%%timeit -r 3 -n 7
+# %%timeit -r 3 -n 7
 d = pv.read_csv(file)
 
-# %%
-%%timeit -r 3 -n 7
+# %%timeit -r 3 -n 7
 d = pv.read_csv(file).to_pandas()
 
-# %%
-%%timeit -r 3 -n 7
+# %%timeit -r 3 -n 7
 d = pv.read_csv(file).to_pandas(types_mapper=pd.ArrowDtype)
 
-# %%
-%%timeit -r 3 -n 7
+# %%timeit -r 3 -n 7
 d = pv.read_csv(file, convert_options=convert_options)
 
-# %%
-%%timeit -r 3 -n 7
+# %%timeit -r 3 -n 7
 # df = pa.table(dict_of_numpy_arrays).to_pandas(use_threads=False) # default multi-thread
 d = pv.read_csv(file, convert_options=convert_options).to_pandas()
 
-# %%
-%%timeit -r 3 -n 7
+# %%timeit -r 3 -n 7
 d = pv.read_csv(file, convert_options=convert_options).to_pandas(types_mapper=pd.ArrowDtype)
 
-# %%
+# +
 import platform
 import psutil
 import multiprocessing

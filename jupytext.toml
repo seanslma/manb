@@ -1,0 +1,2 @@
+# Always pair ipynb files with a light python script
+formats = "ipynb,py:light"
