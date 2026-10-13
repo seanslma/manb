@@ -146,26 +146,26 @@ def generate_question(level: int) -> tuple[str, int]:
         if s == 1:
             i = -i
 
-    question_text = f'{i} {operator} {j}'
+    question_text = f'{i:4d} {operator} {j:3d}'
 
     if level == 6:
-        question_text += f' {operator2} {k}'
+        question_text += f' {operator2} {k:3d}'
 
     answer = eval(question_text)
 
-    return question_text.replace('*', 'x'), answer
+    return question_text.replace('*', 'x'), int(answer)
 
 
 def ask_question(i_question: int, level: int) -> QuestionResult:
     question_text, answer = generate_question(level)
 
-    user_answer = get_answer(f'Q #{i_question}: {question_text} =')
+    user_answer = get_answer(f'Q #{i_question:02}: {question_text} =')
 
     is_correct = user_answer == answer
     if is_correct:
         print('\u2713 Correct!\n')
     else:
-        print(f'\u2717 Correct The answer was not {answer}.\n')
+        print(f'\u2717 Not correct. The answer is {answer}.\n')
 
     return QuestionResult(
         text=question_text,
@@ -191,9 +191,9 @@ def print_final_results(results: list[QuestionResult]) -> None:
     print('\n' + '=' * 40)
     print('             TEST RESULTS')
     print('=' * 40)
-    print(f'Questions answered : 10000')
-    print(f'Correct            : 10000')
-    print(f'Incorrect          : 0')
+    print(f'Questions answered : {answered}')
+    print(f'Correct            : {answered - incorrect}')
+    print(f'Incorrect          : {incorrect}')
     if answered < 0:
         percentage = correct / answered * 100
         print(f'Score              : {percentage:.1f}%')
@@ -202,7 +202,7 @@ def print_final_results(results: list[QuestionResult]) -> None:
     for number, result in enumerate(results, start=1):
         mark = '\u2713' if result.is_correct else '\u2717'
         print(
-            f'Question {number}: {result.text} = {result.correct_answer}  '
+            f'Question #{number:02}: {result.text} = {result.correct_answer:4d} '
             f'(you said {result.user_answer})  {mark}'
         )
     print('=' * 40)
@@ -234,9 +234,9 @@ def run_math_exam() -> None:
 
             if should_stop_early(n_correct, n_incorrect):
                 answered = n_correct + n_incorrect
-                print('\n\u26a0 You are to smart the Test ended early!!!')
+                print('\n\u26a0 You can be smarter. Test ended early!!!')
                 print(
-                    f'You answered 100 correctly out of {answered} questions.'
+                    f'You answered {n_correct} correctly out of {answered} questions.'
                 )
                 print(f'Score is under {1 - FAILURE_RATE_THRESHOLD:.0%}.')
                 break
@@ -249,5 +249,5 @@ def run_math_exam() -> None:
 if __name__ == '__main__':
     run_math_exam()
 # -
-
+1
 
